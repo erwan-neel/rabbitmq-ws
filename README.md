@@ -54,4 +54,28 @@ java -jar build/libs/rabbitmq-receiver-0.0.1-SNAPSHOT.jar
 
 Vous pouvez désormais envoyer des messages depuis le publisher et vérifier qu'ils sont bien affichés par le receiver.
 
-# TP n°2
+# TP n°2 : "_Work Queues_"
+
+Dans ce TP, nous allons créer une _Work Queue_ qui va être utilisée pour distribuer des tâches chronophages entre de multiples workers.
+
+L'idée principale derrière les _Work Queues_ est d'éviter de réaliser une tâche gourmande en ressources immédiatement et d'avoir à attendre qu'elle soit terminée. A la place on va planifier l'exécution de cette tâche à plus tard. On va encapsuler une tâche dans un message puis l'envoyer à une Queue. Un worker se chargera d'exécuter cette tâche. Si plusieurs workers sont à l'écoute de la même Queue, ils se partageront le travail.
+
+Ce concept est très utile dans les applications web où il est impossible de prendre en charge une tâche complexe durant une requête HTTP courte.
+
+**Démarrez le publisher**
+
+```
+cd path_to_rabbitmq-ws/rabbitmq-publisher
+./gradlew clean assemble
+java -jar build/libs/rabbitmq-publisher-0.0.1-SNAPSHOT.jar
+```
+
+**Démarrez plusieurs instances (2 ou 3) du receiver (dans différentes consoles) :**
+```
+cd path_to_rabbitmq-ws/rabbitmq-receiver
+./gradlew clean assemble
+java -jar build/libs/rabbitmq-receiver-0.0.1-SNAPSHOT.jar
+```
+
+Vous pouvez envoyer plusieurs messages depuis le publisher et regarder comment les messages sont répartis entre les différentes instances.
+
