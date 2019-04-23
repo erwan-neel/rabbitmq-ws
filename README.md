@@ -15,6 +15,17 @@ rabbitmqctl list_exchanges
 
 Vous devriez voir des choses s'afficher dans votre console !
 
+# Configurer le proxy de Gradle
+
+Nous utiliserons Gradle dans nos TPs. Si vous êtes derrière un proxy, il faut créer un fichier **gradle.properties** dans votre dossier .gradle (dans votre dossier utilisateur) avec le contenu suivant : 
+
+```
+systemProp.http.proxyHost=127.0.0.1
+systemProp.http.proxyPort=3128
+systemProp.https.proxyHost=127.0.0.1
+systemProp.https.proxyPort=3128
+```
+
 # TP n°1
 
 Dans ce TP, nous aurons deux applications java distinctes :
