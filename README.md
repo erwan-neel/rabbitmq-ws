@@ -26,7 +26,7 @@ systemProp.https.proxyHost=127.0.0.1
 systemProp.https.proxyPort=3128
 ```
 
-# TP n°1
+# TP n°1 : "_Hello World_"
 
 Dans ce TP, nous aurons deux applications java distinctes :
 
@@ -53,3 +53,5 @@ java -jar build/libs/rabbitmq-receiver-0.0.1-SNAPSHOT.jar
 ```
 
 Vous pouvez désormais envoyer des messages depuis le publisher et vérifier qu'ils sont bien affichés par le receiver.
+
+# TP n°2
