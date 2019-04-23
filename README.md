@@ -1,4 +1,4 @@
-**Démarrer RabbitMQ en local**
+#Démarrer RabbitMQ en local
 
 Démarrer un container RabbitMQ grâce à la commande suivante :
 
@@ -14,3 +14,31 @@ rabbitmqctl list_exchanges
 ```
 
 Vous devriez voir des choses s'afficher dans votre console !
+
+# TP n°1
+
+Dans ce TP, nous aurons deux applications java distinctes :
+
+- Un publisher
+- Un receiver
+
+Le publisher enverra des messages sur une queue.
+Le receiver écoutera cette queue et affichera les messages qu'il recevra.
+
+Démarrez le container RabbitMQ si cela n'a pas déjà été fait.
+
+**Démarrez le publisher :**
+```
+cd path_to_rabbitmq-ws/rabbitmq-publisher
+./gradlew clean assemble
+java -jar build/libs/rabbitmq-publisher-0.0.1-SNAPSHOT.jar
+```
+
+**Démarrez enfin le receiver (dans une autre console) :**
+```
+cd path_to_rabbitmq-ws/rabbitmq-receiver
+./gradlew clean assemble
+java -jar build/libs/rabbitmq-receiver-0.0.1-SNAPSHOT.jar
+```
+
+Vous pouvez désormais envoyer des messages depuis le publisher et vérifier qu'ils sont bien affichés par le receiver.
