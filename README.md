@@ -79,3 +79,14 @@ java -jar build/libs/rabbitmq-receiver-0.0.1-SNAPSHOT.jar
 
 Vous pouvez envoyer plusieurs messages depuis le publisher et regarder comment les messages sont répartis entre les différentes instances.
 
+
+# TP n°2.1 : "_Work Queues without autoAck_"
+
+Vous vous demandez peut-être ce qui se passerait si l'un de nos receiver s'interrompait pendant l'exécution d'une tâche. Avec notre code actuel, dès que RabbitMQ a déliveré son message, il le marque immédiatement comme candidat à la suppression (candidat au garbage collector). Dans ce cas, si vous stoppez le worker, vous perdez le message qu'il était en train de traiter.
+
+Mais on ne veut perdre aucun message ! Si un worker meurt, nous souhaitons que la tâche qu'il était en train d'effectuer soit distribuée à un autre worker.
+
+Pour gérer cela, RabbitMQ propose un système de message acknowledgments (ACK). Un ACK est envoyée par le receiver pour prévenir RabbitMQ qu'un message particulier peut bien être supprimé.
+
+**Faites les mêmes manipulations que dans le TP n°2 en essayant de kill une instance de receiver pendant le traitement d'une tâche.** Vous verrez que cette tâche est normalement réattribuée à un autre worker en vie.
+

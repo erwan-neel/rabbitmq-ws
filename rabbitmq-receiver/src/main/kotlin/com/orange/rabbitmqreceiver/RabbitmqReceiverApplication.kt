@@ -27,10 +27,15 @@ class RabbitmqReceiverApplication: CommandLineRunner {
         val deliverCallback = { consumerTag: String, delivery: Delivery ->
             val message = String(delivery.getBody(), charset("UTF-8"))
             println(" [x] Received '$message'")
-            doWork(message)
+            try {
+                doWork(message)
+            } finally {
+                println(" [x] Done")
+                channel.basicAck(delivery.envelope.deliveryTag, false)
+            }
         }
 
-        val autoAck = true
+        val autoAck = false
         channel.basicConsume(QUEUE_NAME, autoAck, deliverCallback, { consumerTag -> })
     }
 
