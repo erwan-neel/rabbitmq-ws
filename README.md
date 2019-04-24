@@ -90,3 +90,19 @@ Pour gérer cela, RabbitMQ propose un système de message acknowledgments (ACK).
 
 **Faites les mêmes manipulations que dans le TP n°2 en essayant de kill une instance de receiver pendant le traitement d'une tâche.** Vous verrez que cette tâche est normalement réattribuée à un autre worker en vie.
 
+# TP n°2.2 : "_Work Queues with persistance_"
+
+Nous avons appris que lorsqu'un worker mourrait, la tâche qu'il était en train d'éxécuter n'était pas perdue. Mais nos tâches seront toujours perdues si RabbitMQ est stoppé.
+
+Quand RabbitMQ s'arrête ou crash il va oublier toutes les queues et les messages à moins de lui avoir spécifié de ne pas le faire. **Deux choses sont nécessaires pour faire en sorte que les messages ne soient pas perdus : il faut déclarer les queues et les messages comme durable.**
+
+ Stoppez toutes vos applications java.
+ 
+ Redémarrez votre container RabbitMQ et jouez la commande suivante (en remplaçant le dossier du volume par celui de votre choix) : 
+```
+docker run -d -p 5672:5672 --hostname rabbit-host -v /home/zpmr4581/dockerVolumes/rabbit:/var/lib/rabbitmq rabbitmq
+```
+
+Démarrez votre application publisher et publiez un message.
+
+Redémarrez votre container RabbitMQ puis démarrez votre application receiver. Malgré le redémarrage de votre container RabbitMQ, le message est tout de même transmis au receiver grâce à notre configuration.
