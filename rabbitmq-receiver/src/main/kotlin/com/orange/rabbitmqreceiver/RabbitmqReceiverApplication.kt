@@ -21,8 +21,12 @@ class RabbitmqReceiverApplication: CommandLineRunner {
         val connection = factory.newConnection()
         val channel = connection.createChannel()
 
-        channel.queueDeclare(QUEUE_NAME, false, false, false, null)
+        val durable = true
+        channel.queueDeclare(QUEUE_NAME, durable, false, false, null)
         println(" [*] Waiting for messages. To exit press CTRL+C")
+
+        val prefetchCount = 1
+        channel.basicQos(prefetchCount)
 
         val deliverCallback = { consumerTag: String, delivery: Delivery ->
             val message = String(delivery.getBody(), charset("UTF-8"))

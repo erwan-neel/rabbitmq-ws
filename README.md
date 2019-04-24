@@ -106,3 +106,16 @@ docker run -d -p 5672:5672 --hostname rabbit-host -v /home/zpmr4581/dockerVolume
 Démarrez votre application publisher et publiez un message.
 
 Redémarrez votre container RabbitMQ puis démarrez votre application receiver. Malgré le redémarrage de votre container RabbitMQ, le message est tout de même transmis au receiver grâce à notre configuration.
+
+# TP n°2.3 : "_Work Queues fair dispatch_"
+
+Vous avez peut-être noté que la répartition des tâches réalisée par RabbitMQ ne correspond pas encore totalement à ce que nous recherchons. Par exemple, dans une situation avec deux workers, quand tous les messages pairs sont lourds à traiter et que les messages impairs sont légers, l'un des deux workers sera constamment occupé tandis que l'autre ne fera presque rien.
+
+Cela vient du fait que RabbitMQ dispatch un message quand il entre dans la queue. Il ne s'occupe du nombre de message qui n'ont pas encore été acquités par un worker. Il se contente de dispatcher les messages aveuglément : chaque n-th message au n-th worker.
+
+Pour parer à cela, on peut demander à RabbitMQ de ne pas donner plus d'un message à la fois à un worker. En d'autres mots, ne pas dispatcher un nouveau message à un worker tant qu'il n'a pas encore acquité le message dont il est en train de s'occuper.
+
+```
+val prefetchCount = 1
+channel.basicQos(prefetchCount)
+```
