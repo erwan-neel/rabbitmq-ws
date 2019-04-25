@@ -12,27 +12,27 @@ import org.springframework.boot.runApplication
 class RabbitmqPublisherApplication : CommandLineRunner {
 
     companion object {
-        const val EXCHANGE_NAME = "direct_logs"
+        const val EXCHANGE_NAME = "topic_logs"
     }
 
     override fun run(vararg args: String?) {
         val channel = prepareRabbitMqConnection()
-        var severity = getSeverity()
+        var routingKey = getRoutingKey()
         val message = "Hello World"
 
-        while (severity != "exit") {
+        while (routingKey != "exit") {
             channel.basicPublish(
                     EXCHANGE_NAME,
-                    severity,
+                    routingKey,
                     null,
                     message.toByteArray()
             )
-            severity = getSeverity()
+            routingKey = getRoutingKey()
         }
     }
 
-    private fun getSeverity(): String {
-        val promptMessage = "Veuillez saisir une sévérité (info - warning - error) pour le message à envoyer (CTRL + C pour quitter) : "
+    private fun getRoutingKey(): String {
+        val promptMessage = "Veuillez saisir clé de routage (toto.example.*) pour le message à envoyer (CTRL + C pour quitter) : "
         println(promptMessage)
 
         return readLine()!!
@@ -43,7 +43,7 @@ class RabbitmqPublisherApplication : CommandLineRunner {
         factory.host = "localhost"
         val connection = factory.newConnection()
         val channel = connection.createChannel()
-        channel.exchangeDeclare(EXCHANGE_NAME, ExchangeTypes.DIRECT)
+        channel.exchangeDeclare(EXCHANGE_NAME, ExchangeTypes.TOPIC)
 
         return channel
     }

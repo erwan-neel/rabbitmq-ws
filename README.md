@@ -166,3 +166,9 @@ Dans le tutoriel précédent, nous avons été capable de distribuer un même me
 Dans ce tutoriel nous allons désormais faire en sorte qu'il soit possible de souscrire à un sous-ensemble des messages. Par exemple, nous allons diriger uniquement les messages d'erreurs dans le fichier de logs (pour préserver l'espace disque), mais nous continuerons d'afficher tous les messages à l'écran.
 
 Pour cela nous allons utiliser un exchange direct (contrairement au tutoriel précédent ou nous utilisions un exchange fanout).
+
+# TP n°5 : "_Topics_"
+
+Pour distribuer les messages depuis un exchange vers des queues, il existe un moyen plus fexible que l'exchange direct => l'exchange topic.
+
+C'est celui que nous allons utiliser dans ce tutoriel afin de passer en revue les possibilités qu'il permet.

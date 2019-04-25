@@ -4,8 +4,6 @@ import com.rabbitmq.client.ConnectionFactory
 import org.springframework.boot.CommandLineRunner
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
-import org.springframework.amqp.rabbit.core.RabbitAdmin.QUEUE_NAME
-import com.rabbitmq.client.DeliverCallback
 import com.rabbitmq.client.Delivery
 import org.springframework.amqp.core.ExchangeTypes
 
@@ -13,7 +11,7 @@ import org.springframework.amqp.core.ExchangeTypes
 @SpringBootApplication
 class RabbitmqReceiverApplication : CommandLineRunner {
     companion object {
-        const val EXCHANGE_NAME = "direct_logs"
+        const val EXCHANGE_NAME = "topic_logs"
         const val HOST = "localhost"
     }
 
@@ -23,13 +21,12 @@ class RabbitmqReceiverApplication : CommandLineRunner {
         val connection = factory.newConnection()
         val channel = connection.createChannel()
 
-        channel.exchangeDeclare(EXCHANGE_NAME, ExchangeTypes.DIRECT)
+        channel.exchangeDeclare(EXCHANGE_NAME, ExchangeTypes.TOPIC)
 
         val queueName = channel.queueDeclare().queue
-        val severities = getSeverity()
-        println(severities)
+        val routingBinding = getRoutingBinding()
 
-        severities.map { severity -> channel.queueBind(queueName, EXCHANGE_NAME, severity) }
+        channel.queueBind(queueName, EXCHANGE_NAME, routingBinding)
 
         println(" [*] Waiting for messages. To exit press CTRL+C")
 
@@ -42,11 +39,11 @@ class RabbitmqReceiverApplication : CommandLineRunner {
         channel.basicConsume(queueName, autoAck, deliverCallback, { consumerTag -> })
     }
 
-    private fun getSeverity(): List<String> {
-        val promptMessage = "Veuillez saisir une ou plusieurs sévérités (info - warning - error) pour le binding de la queue (CTRL + C pour quitter) : "
+    private fun getRoutingBinding(): String {
+        val promptMessage = "Veuillez saisir une clé de routage pour le binding de la queue (CTRL + C pour quitter) : "
         println(promptMessage)
 
-        return readLine()!!.split(" ")
+        return readLine()!!
     }
 }
 
