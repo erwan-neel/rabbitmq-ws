@@ -7,46 +7,36 @@ import org.springframework.boot.runApplication
 import org.springframework.amqp.rabbit.core.RabbitAdmin.QUEUE_NAME
 import com.rabbitmq.client.DeliverCallback
 import com.rabbitmq.client.Delivery
+import org.springframework.amqp.core.ExchangeTypes
 
 
 @SpringBootApplication
-class RabbitmqReceiverApplication: CommandLineRunner {
+class RabbitmqReceiverApplication : CommandLineRunner {
     companion object {
-        const val QUEUE_NAME = "hello"
+        const val EXCHANGE_NAME = "logs"
+        const val HOST = "localhost"
     }
 
     override fun run(vararg args: String?) {
         val factory = ConnectionFactory()
-        factory.host = "localhost"
+        factory.host = HOST
         val connection = factory.newConnection()
         val channel = connection.createChannel()
 
-        val durable = true
-        channel.queueDeclare(QUEUE_NAME, durable, false, false, null)
-        println(" [*] Waiting for messages. To exit press CTRL+C")
+        channel.exchangeDeclare(EXCHANGE_NAME, ExchangeTypes.FANOUT)
 
-        val prefetchCount = 1
-        channel.basicQos(prefetchCount)
+        val queueName = channel.queueDeclare().queue
+        channel.queueBind(queueName, EXCHANGE_NAME, "")
+
+        println(" [*] Waiting for messages. To exit press CTRL+C")
 
         val deliverCallback = { consumerTag: String, delivery: Delivery ->
             val message = String(delivery.getBody(), charset("UTF-8"))
             println(" [x] Received '$message'")
-            try {
-                doWork(message)
-            } finally {
-                println(" [x] Done")
-                channel.basicAck(delivery.envelope.deliveryTag, false)
-            }
         }
 
-        val autoAck = false
-        channel.basicConsume(QUEUE_NAME, autoAck, deliverCallback, { consumerTag -> })
-    }
-
-    private fun doWork(task: String) {
-        for (ch: Char in task.toCharArray()) {
-            if (ch == '.') Thread.sleep(1000)
-        }
+        val autoAck = true
+        channel.basicConsume(queueName, autoAck, deliverCallback, { consumerTag -> })
     }
 }
 

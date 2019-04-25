@@ -119,3 +119,42 @@ Pour parer à cela, on peut demander à RabbitMQ de ne pas donner plus d'un mess
 val prefetchCount = 1
 channel.basicQos(prefetchCount)
 ```
+
+# TP n°3 : "_Publish/Subscribe_"
+
+Dans le tutoriel précédent nous avons créé une Work Queue. La supposition derrière une Work Queue est que chaque tâche sera déliverée à un et un seul worker. Dans cette partie nous allons faire quelque chose de complètement différent : nous allons déliverer un message à de multiples workers. Ce pattern est connu sous le nom de "publish/subscribe".
+
+Pour illustrer ce pattern, nous allons construire un simple système de logs. Il consistera en deux programmes : le premier émettera des messages de logs et le second se chargera de les recevoirs et de les afficher.
+
+Dans notre système de logs, chaque instance du receiver recevra le message. De cette façon nous serons capable d'avoir un receiver qui enregistrera les logs sur le disque tandis que le second s'occupera de les afficher à l'écran (par exemple).
+
+De manière générale, les messages de logs seront distribués vers tous les receivers.
+
+**Exchanges**
+
+Dans les parties précédentes du tutoriel nous émettions/recevions des messages directement sur/depuis la queue. En pratique il faut toujours passer par un exchange.
+
+Les points importants du code qui vont changer sont les suivants :
+
+-> la déclaration de l'exchange :
+```
+channel.exchangeDeclare("logs", ExchangeTypes.FANOUT)
+```
+
+-> la publication des messages :
+```
+channel.basicPublish("logs", "", null, message.getBytes())
+```
+
+-> le binding (l'association d'une queue à un exchange) :
+```
+channel.queueBind(queueName, "logs", "")
+```
+
+Quelques commandes utiles pour visualiser les bindings, les exchanges et les queues déclarés dans RabbitMQ : 
+
+```
+rabbitmqctl list_exchanges
+rabbitmqctl list_queues
+rabbitmqctl list_bindings
+```
