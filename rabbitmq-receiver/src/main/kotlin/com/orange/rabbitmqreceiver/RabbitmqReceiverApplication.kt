@@ -13,7 +13,7 @@ import org.springframework.amqp.core.ExchangeTypes
 @SpringBootApplication
 class RabbitmqReceiverApplication : CommandLineRunner {
     companion object {
-        const val EXCHANGE_NAME = "logs"
+        const val EXCHANGE_NAME = "direct_logs"
         const val HOST = "localhost"
     }
 
@@ -23,10 +23,13 @@ class RabbitmqReceiverApplication : CommandLineRunner {
         val connection = factory.newConnection()
         val channel = connection.createChannel()
 
-        channel.exchangeDeclare(EXCHANGE_NAME, ExchangeTypes.FANOUT)
+        channel.exchangeDeclare(EXCHANGE_NAME, ExchangeTypes.DIRECT)
 
         val queueName = channel.queueDeclare().queue
-        channel.queueBind(queueName, EXCHANGE_NAME, "")
+        val severities = getSeverity()
+        println(severities)
+
+        severities.map { severity -> channel.queueBind(queueName, EXCHANGE_NAME, severity) }
 
         println(" [*] Waiting for messages. To exit press CTRL+C")
 
@@ -37,6 +40,13 @@ class RabbitmqReceiverApplication : CommandLineRunner {
 
         val autoAck = true
         channel.basicConsume(queueName, autoAck, deliverCallback, { consumerTag -> })
+    }
+
+    private fun getSeverity(): List<String> {
+        val promptMessage = "Veuillez saisir une ou plusieurs sévérités (info - warning - error) pour le binding de la queue (CTRL + C pour quitter) : "
+        println(promptMessage)
+
+        return readLine()!!.split(" ")
     }
 }
 

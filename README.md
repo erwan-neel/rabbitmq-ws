@@ -158,3 +158,11 @@ rabbitmqctl list_exchanges
 rabbitmqctl list_queues
 rabbitmqctl list_bindings
 ```
+
+# TP n°4 : "_Routing_"
+
+Dans le tutoriel précédent, nous avons été capable de distribuer un même message à plusieurs receivers.
+
+Dans ce tutoriel nous allons désormais faire en sorte qu'il soit possible de souscrire à un sous-ensemble des messages. Par exemple, nous allons diriger uniquement les messages d'erreurs dans le fichier de logs (pour préserver l'espace disque), mais nous continuerons d'afficher tous les messages à l'écran.
+
+Pour cela nous allons utiliser un exchange direct (contrairement au tutoriel précédent ou nous utilisions un exchange fanout).
